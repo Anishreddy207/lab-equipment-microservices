@@ -1,0 +1,30 @@
+=== 5. GET /api/equipment/4 (READ) -> 200 ===
+HTTP/1.1 200 OK
+X-Correlation-Id: 0064a03a-2956-4133-b025-f59d0936c177
+
+{"id":4,"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"AVAILABLE","conditionNotes":"New","createdAt":"2026-07-30T17:42:25.725888Z","updatedAt":"2026-07-30T17:42:25.725888Z"}
+
+=== 6. PUT /api/equipment/4 as ADMIN (UPDATE) -> 200 ===
+HTTP/1.1 200 OK
+X-Correlation-Id: 33d8fd99-81ad-4ece-a8e6-fd153ec1cbab
+
+{"id":4,"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"UNDER_MAINTENANCE","conditionNotes":"Nozzle jammed","createdAt":"2026-07-30T17:42:25.725888Z","updatedAt":"2026-07-30T17:42:42.452306Z"}
+
+=== 7. POST /api/equipment with INVALID body (missing required fields) -> 400 Validation ===
+HTTP/1.1 400 Bad Request
+X-Correlation-Id: b351867d-cfc9-45f5-9fde-86d9d528aaf3
+
+{"timestamp":"2026-07-30T17:42:42.681224Z","status":400,"error":"Validation Failed","fieldErrors":{"name":"name is required","status":"status is required","category":"category is required","location":"location is required"}}
+
+=== 8. DELETE /api/equipment/4 as ADMIN -> 204 No Content (DELETE) ===
+HTTP/1.1 204 No Content
+X-Correlation-Id: 7de2ca76-6ba2-4c65-90f6-53ec291dc53b
+
+
+
+=== 9. GET /api/equipment/4 after delete -> 404 Not Found ===
+HTTP/1.1 404 Not Found
+X-Correlation-Id: ee53a1fd-393b-4362-9dbc-1165883acdb9
+
+{"timestamp":"2026-07-30T17:42:43.827709Z","status":404,"error":"Equipment 4 not found"}
+

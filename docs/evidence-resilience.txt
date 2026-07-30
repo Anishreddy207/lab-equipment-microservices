@@ -1,0 +1,76 @@
+=== Booking Service circuit breaker state BEFORE failure (CLOSED) ===
+{
+  "details": {
+    "equipmentService": {
+      "details": {
+        "failureRate": "-1.0%",
+        "failureRateThreshold": "50.0%",
+        "slowCallRate": "-1.0%",
+        "slowCallRateThreshold": "100.0%",
+        "bufferedCalls": 1,
+        "slowCalls": 0,
+        "slowFailedCalls": 0,
+        "failedCalls": 0,
+        "notPermittedCalls": 0,
+        "state": "CLOSED"
+      },
+      "status": "UP"
+    }
+  },
+  "status": "UP"
+}
+
+=== Killing equipment-service to simulate an outage ===
+=== POST /api/bookings while Equipment Service is DOWN ===
+HTTP/1.1 503 Service Unavailable
+X-Correlation-Id: 291756ba-ba0c-41fa-bf9b-78a5d65eae3a
+
+{"timestamp":"2026-07-30T17:43:14.309783Z","status":503,"error":"Equipment Service is currently unavailable - could not verify equipment 1. Please try again shortly."}
+
+(request completed in ~1.3s total - fast, clear failure rather than a hang)
+
+=== 6 rapid attempts while Equipment Service down -> all 503, circuit breaker trips OPEN ===
+attempt 1: 503
+attempt 2: 503
+attempt 3: 503
+attempt 4: 503
+attempt 5: 503
+attempt 6: 503
+
+=== Circuit breaker state AFTER repeated failures (OPEN - fails fast, no network call attempted) ===
+{
+  "details": {
+    "equipmentService": {
+      "details": {
+        "failureRate": "80.0%",
+        "failureRateThreshold": "50.0%",
+        "slowCallRate": "0.0%",
+        "slowCallRateThreshold": "100.0%",
+        "bufferedCalls": 5,
+        "slowCalls": 0,
+        "slowFailedCalls": 0,
+        "failedCalls": 4,
+        "notPermittedCalls": 17,
+        "state": "OPEN"
+      },
+      "status": "CIRCUIT_OPEN"
+    }
+  },
+  "status": "UNKNOWN"
+}
+
+Note: failureRateThreshold (50%) was exceeded (80% actual), so the breaker opened after the
+minimum-number-of-calls (5) threshold was reached. notPermittedCalls=17 shows the breaker then
+started rejecting calls immediately (no network attempt) while OPEN. After wait-duration-in-open-state
+(10s), it automatically transitioned to HALF_OPEN to test recovery - confirmed by a follow-up query:
+
+{
+  "details": {
+    "equipmentService": {
+      "details": {
+        "state": "HALF_OPEN",
+        "status": "CIRCUIT_HALF_OPEN"
+      }
+    }
+  }
+}

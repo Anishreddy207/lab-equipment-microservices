@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="950" viewBox="0 0 1500 950" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrowSolid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/>
+    </marker>
+    <marker id="arrowAsync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/>
+    </marker>
+    <marker id="arrowInfra" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+
+  <rect width="1500" height="950" fill="#ffffff"/>
+
+  <text x="750" y="18" text-anchor="middle" font-size="20" font-weight="bold" fill="#111827">
+    Lab Equipment Booking &amp; Maintenance Coordination — System Architecture
+  </text>
+
+  <!-- Infra cross-cutting lines (drawn first, underneath) -->
+  <g stroke="#c7cbd1" stroke-width="1" stroke-dasharray="2,4" marker-end="url(#arrowInfra)" fill="none">
+    <path d="M270,320 L570,185"/>
+    <path d="M270,320 L330,360"/>
+    <path d="M270,320 L830,360"/>
+    <path d="M270,440 L570,195"/>
+    <path d="M270,440 L330,375"/>
+    <path d="M270,440 L830,375"/>
+    <path d="M270,560 L570,205"/>
+    <path d="M270,560 L330,390"/>
+    <path d="M270,560 L830,390"/>
+  </g>
+
+  <!-- Client -->
+  <rect x="600" y="40" width="260" height="60" rx="8" fill="#eef2ff" stroke="#4338ca" stroke-width="1.5"/>
+  <text x="730" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#312e81">Client</text>
+  <text x="730" y="83" text-anchor="middle" font-size="12" fill="#4338ca">Browser / Postman / curl</text>
+
+  <!-- Client -> Gateway -->
+  <path d="M730,100 L730,130" stroke="#1f2937" stroke-width="2" fill="none" marker-end="url(#arrowSolid)"/>
+  <text x="745" y="108" font-size="11" fill="#1f2937">HTTPS (sole entry point)</text>
+
+  <!-- API Gateway -->
+  <rect x="570" y="130" width="320" height="100" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+  <text x="730" y="155" text-anchor="middle" font-size="15" font-weight="bold" fill="#78350f">API Gateway :8080</text>
+  <text x="730" y="175" text-anchor="middle" font-size="12" fill="#78350f">Spring Cloud Gateway (WebFlux)</text>
+  <text x="730" y="193" text-anchor="middle" font-size="11" fill="#78350f">JwtAuthenticationGlobalFilter</text>
+  <text x="730" y="209" text-anchor="middle" font-size="11" fill="#78350f">CorrelationId default-filter</text>
+  <text x="730" y="225" text-anchor="middle" font-size="11" fill="#78350f">discovery-based routing (lb://)</text>
+
+  <!-- Infra boxes -->
+  <rect x="40" y="280" width="230" height="80" rx="8" fill="#ecfeff" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="155" y="308" text-anchor="middle" font-size="13" font-weight="bold" fill="#164e63">Eureka Discovery :8761</text>
+  <text x="155" y="326" text-anchor="middle" font-size="11" fill="#164e63">Service registration &amp;</text>
+  <text x="155" y="341" text-anchor="middle" font-size="11" fill="#164e63">client-side load balancing</text>
+
+  <rect x="40" y="400" width="230" height="80" rx="8" fill="#ecfeff" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="155" y="428" text-anchor="middle" font-size="13" font-weight="bold" fill="#164e63">Config Server :8888</text>
+  <text x="155" y="446" text-anchor="middle" font-size="11" fill="#164e63">Native repo, dev/prod profiles,</text>
+  <text x="155" y="461" text-anchor="middle" font-size="11" fill="#164e63">secrets via env vars</text>
+
+  <rect x="40" y="520" width="230" height="80" rx="8" fill="#ecfeff" stroke="#0e7490" stroke-width="1.5"/>
+  <text x="155" y="548" text-anchor="middle" font-size="13" font-weight="bold" fill="#164e63">Zipkin :9411</text>
+  <text x="155" y="566" text-anchor="middle" font-size="11" fill="#164e63">Distributed trace</text>
+  <text x="155" y="581" text-anchor="middle" font-size="11" fill="#164e63">collection &amp; UI</text>
+
+  <text x="155" y="620" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">
+    (dotted lines: all three services register with Eureka,
+  </text>
+  <text x="155" y="634" text-anchor="middle" font-size="10" fill="#6b7280" font-style="italic">
+    pull config at boot, and export traces to Zipkin)
+  </text>
+
+  <!-- Gateway -> Booking -->
+  <path d="M660,230 L500,300" stroke="#1f2937" stroke-width="2" fill="none" marker-end="url(#arrowSolid)"/>
+  <text x="490" y="270" font-size="11" fill="#1f2937">/api/auth/**</text>
+  <text x="470" y="284" font-size="11" fill="#1f2937">/api/bookings/**</text>
+
+  <!-- Gateway -> Equipment -->
+  <path d="M800,230 L960,300" stroke="#1f2937" stroke-width="2" fill="none" marker-end="url(#arrowSolid)"/>
+  <text x="870" y="270" font-size="11" fill="#1f2937">/api/equipment/**</text>
+  <text x="845" y="284" font-size="11" fill="#1f2937">/api/maintenance-records/**</text>
+
+  <!-- Booking Service -->
+  <rect x="330" y="300" width="340" height="120" rx="8" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="500" y="325" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">Booking Service :8081</text>
+  <text x="500" y="343" text-anchor="middle" font-size="12" fill="#1e3a8a">(Service A)</text>
+  <text x="500" y="361" text-anchor="middle" font-size="11" fill="#1e3a8a">Booking, User — CRUD + JWT issuance</text>
+  <text x="500" y="378" text-anchor="middle" font-size="11" fill="#1e3a8a">OpenFeign client + Resilience4J</text>
+  <text x="500" y="395" text-anchor="middle" font-size="11" fill="#1e3a8a">(circuit breaker, retry, fallback)</text>
+  <text x="500" y="412" text-anchor="middle" font-size="11" fill="#1e3a8a">RabbitMQ producer</text>
+
+  <!-- Equipment Service -->
+  <rect x="830" y="300" width="340" height="120" rx="8" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+  <text x="1000" y="325" text-anchor="middle" font-size="15" font-weight="bold" fill="#14532d">Equipment Service :8082</text>
+  <text x="1000" y="343" text-anchor="middle" font-size="12" fill="#14532d">(Service B)</text>
+  <text x="1000" y="361" text-anchor="middle" font-size="11" fill="#14532d">Equipment, MaintenanceRecord — CRUD</text>
+  <text x="1000" y="378" text-anchor="middle" font-size="11" fill="#14532d">Role-gated (ADMIN write/delete)</text>
+  <text x="1000" y="395" text-anchor="middle" font-size="11" fill="#14532d">RabbitMQ consumer</text>
+  <text x="1000" y="412" text-anchor="middle" font-size="11" fill="#14532d">@RabbitListener</text>
+
+  <!-- Booking -> Equipment sync call -->
+  <path d="M670,352 L830,352" stroke="#1f2937" stroke-width="2.5" fill="none" marker-end="url(#arrowSolid)"/>
+  <text x="672" y="345" font-size="11" fill="#1f2937" font-weight="bold">sync: GET /api/equipment/{id}</text>
+  <text x="700" y="333" font-size="10" fill="#1f2937">(check AVAILABLE before confirming booking)</text>
+
+  <!-- RabbitMQ -->
+  <rect x="560" y="480" width="360" height="90" rx="8" fill="#ffedd5" stroke="#c2410c" stroke-width="1.5"/>
+  <text x="740" y="505" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c2d12">RabbitMQ</text>
+  <text x="740" y="523" text-anchor="middle" font-size="11" fill="#7c2d12">Exchange: lab-equipment-exchange (topic)</text>
+  <text x="740" y="539" text-anchor="middle" font-size="11" fill="#7c2d12">Queue: maintenance-requested-queue</text>
+  <text x="740" y="556" text-anchor="middle" font-size="11" fill="#7c2d12">Routing key: maintenance.requested</text>
+
+  <!-- Booking -> RabbitMQ (async publish) -->
+  <path d="M560,420 L680,480" stroke="#c2410c" stroke-width="2.5" stroke-dasharray="7,4" fill="none" marker-end="url(#arrowAsync)"/>
+  <text x="560" y="450" font-size="11" fill="#c2410c" font-weight="bold">async: publish</text>
+  <text x="555" y="463" font-size="10" fill="#c2410c">MaintenanceRequested</text>
+
+  <!-- RabbitMQ -> Equipment (async consume) -->
+  <path d="M840,480 L960,420" stroke="#c2410c" stroke-width="2.5" stroke-dasharray="7,4" fill="none" marker-end="url(#arrowAsync)"/>
+  <text x="850" y="450" font-size="11" fill="#c2410c" font-weight="bold">async: consume</text>
+  <text x="850" y="463" font-size="10" fill="#c2410c">-&gt; UNDER_MAINTENANCE +</text>
+  <text x="850" y="476" font-size="10" fill="#c2410c">new MaintenanceRecord</text>
+
+  <!-- Booking DB -->
+  <rect x="330" y="640" width="220" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563" stroke-width="1.5"/>
+  <text x="440" y="668" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">Booking DB</text>
+  <text x="440" y="686" text-anchor="middle" font-size="11" fill="#1f2937">H2 (dev) / PostgreSQL :5433 (prod)</text>
+  <text x="440" y="701" text-anchor="middle" font-size="11" fill="#1f2937">dedicated schema</text>
+
+  <!-- Equipment DB -->
+  <rect x="900" y="640" width="220" height="80" rx="8" fill="#f3f4f6" stroke="#4b5563" stroke-width="1.5"/>
+  <text x="1010" y="668" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">Equipment DB</text>
+  <text x="1010" y="686" text-anchor="middle" font-size="11" fill="#1f2937">H2 (dev) / PostgreSQL :5434 (prod)</text>
+  <text x="1010" y="701" text-anchor="middle" font-size="11" fill="#1f2937">dedicated schema</text>
+
+  <!-- Booking -> BookingDB -->
+  <path d="M430,420 L430,640" stroke="#1f2937" stroke-width="2" fill="none" marker-end="url(#arrowSolid)"/>
+  <text x="437" y="600" font-size="10" fill="#1f2937">JDBC</text>
+
+  <!-- Equipment -> EquipmentDB -->
+  <path d="M1010,420 L1010,640" stroke="#1f2937" stroke-width="2" fill="none" marker-end="url(#arrowSolid)"/>
+  <text x="1017" y="600" font-size="10" fill="#1f2937">JDBC</text>
+
+  <!-- Legend -->
+  <rect x="1150" y="640" width="320" height="200" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1"/>
+  <text x="1165" y="665" font-size="13" font-weight="bold" fill="#111827">Legend</text>
+
+  <path d="M1165,685 L1210,685" stroke="#1f2937" stroke-width="2.5" marker-end="url(#arrowSolid)"/>
+  <text x="1218" y="690" font-size="11" fill="#1f2937">Synchronous REST call</text>
+
+  <path d="M1165,712 L1210,712" stroke="#c2410c" stroke-width="2.5" stroke-dasharray="7,4" marker-end="url(#arrowAsync)"/>
+  <text x="1218" y="717" font-size="11" fill="#1f2937">Asynchronous event (RabbitMQ)</text>
+
+  <path d="M1165,739 L1210,739" stroke="#9ca3af" stroke-width="1" stroke-dasharray="2,4" marker-end="url(#arrowInfra)"/>
+  <text x="1218" y="744" font-size="11" fill="#1f2937">Infra: registration / config / tracing</text>
+
+  <rect x="1160" y="762" width="26" height="16" fill="#eef2ff" stroke="#4338ca"/>
+  <text x="1218" y="775" font-size="11" fill="#1f2937">Client entry point</text>
+
+  <rect x="1160" y="787" width="26" height="16" fill="#fef3c7" stroke="#b45309"/>
+  <text x="1218" y="800" font-size="11" fill="#1f2937">API Gateway</text>
+
+  <rect x="1160" y="812" width="26" height="16" fill="#dbeafe" stroke="#1d4ed8"/>
+  <text x="1218" y="825" font-size="11" fill="#1f2937">Domain microservices</text>
+</svg>

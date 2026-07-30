@@ -1,0 +1,25 @@
+=== 1. POST /api/auth/login (admin) - 200 ===
+HTTP/1.1 200 OK
+X-Correlation-Id: c5e97bdd-7175-4b5f-953c-192fdf3d4452
+
+{"token":"eyJhbGciOiJIUzM4NCJ9...(truncated)...CLR7jgxPodCS1nuNTz2Zqwt","username":"admin","role":"ADMIN","expiresInMs":3600000}
+
+=== 2. GET /api/equipment with NO token -> 401 ===
+HTTP/1.1 401 Unauthorized
+X-Auth-Error: Missing bearer token
+
+
+
+=== 3. POST /api/equipment as STUDENT (wrong role) -> 403 ===
+HTTP/1.1 403 Forbidden
+X-Correlation-Id: 5e85ea9c-54eb-4011-8bdf-ca81e0154cd2
+
+{"timestamp":"2026-07-30T17:42:25.643544Z","status":403,"error":"Requires role: ADMIN"}
+
+=== 4. POST /api/equipment as ADMIN -> 201 Created (CREATE) ===
+HTTP/1.1 201 Created
+X-Correlation-Id: 7aec9f0a-c210-445d-80a8-e346fd0d6f74
+Location: /api/equipment/4
+
+{"id":4,"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"AVAILABLE","conditionNotes":"New","createdAt":"2026-07-30T17:42:25.725888Z","updatedAt":"2026-07-30T17:42:25.725888Z"}
+
