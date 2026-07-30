@@ -1,0 +1,59 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: labequip-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: labequip-zipkin
+    ports:
+      - "9411:9411"
+
+  booking-db:
+    image: postgres:16-alpine
+    container_name: labequip-booking-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: booking_db
+      POSTGRES_USER: booking_user
+      POSTGRES_PASSWORD: ${BOOKING_DB_PASSWORD:-booking_pass}
+    volumes:
+      - booking-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U booking_user -d booking_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  equipment-db:
+    image: postgres:16-alpine
+    container_name: labequip-equipment-db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: equipment_db
+      POSTGRES_USER: equipment_user
+      POSTGRES_PASSWORD: ${EQUIPMENT_DB_PASSWORD:-equipment_pass}
+    volumes:
+      - equipment-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U equipment_user -d equipment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  booking-db-data:
+  equipment-db-data:
