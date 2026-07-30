@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { background: #1e1e1e; margin: 0; padding: 24px; font-family: 'Menlo', 'Courier New', monospace; }
+  .titlebar { color: #ccc; font-size: 13px; margin-bottom: 10px; }
+  pre { background: #1e1e1e; color: #d4d4d4; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; margin: 0; }
+  .hl { color: #4ec9b0; font-weight: bold; }
+  .service-booking { color: #569cd6; }
+  .service-equip { color: #6a9955; }
+  .comment { color: #808080; }
+</style>
+</head>
+<body>
+<div class="titlebar">logs/booking-service.log &amp; logs/equipment-service.log — grep MaintenanceRequested</div>
+<pre><span class="comment"># Same trace ID (<span class="hl">6a6b9b36157cf8b75c1ddbb576c80ae1</span>) appears in both services' log lines
+# for the one async hop: Booking Service publishes, Equipment Service consumes.</span>
+
+<span class="service-booking">booking-service.log:</span>
+2026-07-31T00:13:02.813+05:30  INFO [booking-service,<span class="hl">6a6b9b36157cf8b75c1ddbb576c80ae1</span>,1d009be520f8f837] 19494 --- [booking-service] [nio-8081-exec-9] [6a6b9b36157cf8b75c1ddbb576c80ae1-1d009be520f8f837] c.l.b.m.MaintenanceEventPublisher        : Published MaintenanceRequested event: equipmentId=2 bookingId=4
+
+<span class="service-equip">equipment-service.log:</span>
+2026-07-31T00:13:02.833+05:30  INFO [equipment-service,<span class="hl">6a6b9b36157cf8b75c1ddbb576c80ae1</span>,209a8e822c57e197] 21691 --- [equipment-service] [ntContainer#0-1] [6a6b9b36157cf8b75c1ddbb576c80ae1-209a8e822c57e197] c.l.e.m.MaintenanceRequestedListener     : Received MaintenanceRequested event for equipmentId=2
+2026-07-31T00:13:02.837+05:30  INFO [equipment-service,<span class="hl">6a6b9b36157cf8b75c1ddbb576c80ae1</span>,209a8e822c57e197] 21691 --- [equipment-service] [ntContainer#0-1] [6a6b9b36157cf8b75c1ddbb576c80ae1-209a8e822c57e197] c.l.e.service.MaintenanceRecordService   : Processed MaintenanceRequested event: equipmentId=2 bookingId=4 -&gt; equipment set to UNDER_MAINTENANCE, maintenance record 1 created
+
+<span class="comment"># Log pattern: [service-name,traceId,spanId] - identical traceId across services,
+# distinct spanId per service, confirming correlated but independently-spanned work.</span></pre>
+</body>
+</html>

@@ -68,7 +68,10 @@ system (Booking → Equipment availability check), for reasons specific to this 
    point-to-point/topic-routed event: no need for Kafka's log-based replay, partitioning, or
    consumer-group semantics at this scale, and RabbitMQ's lower operational overhead (single
    container, simpler `docker-compose` entry, quicker to demonstrate) was a better fit for a
-   two-service, single-event-type system.
+   two-service, single-event-type system. Empirical message-queue benchmarking supports this:
+   RabbitMQ remains competitive with lower operational complexity at moderate throughput, while
+   Kafka's advantages concentrate at large-scale, high-throughput, multi-consumer-group workloads
+   this system does not have [3].
 3. **Spring Cloud Stream abstraction over RabbitMQ** instead of raw `spring-boot-starter-amqp` +
    `RabbitTemplate`/`@RabbitListener`. Rejected for this assignment: Cloud Stream would add a
    binder abstraction layer that isn't needed for a single exchange/queue and would obscure the
@@ -106,8 +109,19 @@ system (Booking → Equipment availability check), for reasons specific to this 
   (`handleMaintenanceRequested`)
 - RabbitMQ management UI evidence: `docs/screenshots/02-rabbitmq-queue.jpg`,
   `docs/screenshots/03-rabbitmq-exchange.jpg`
+- Actual message payload (exchange, routing key, JSON body, traceparent header), captured via
+  RabbitMQ's "Get messages" inspector: `docs/screenshots/08-rabbitmq-message-payload.jpg`
 - Distributed trace showing the publish/consume hop: `docs/screenshots/05-zipkin-async-trace.jpg`
   (spans: `booking-service: lab-equipment-exchange/maintenance.requested send` →
   `equipment-service: maintenance-requested-queue receive`)
 - Report evidence: Section 2.3 "Asynchronous Messaging"
 - Screencast timestamp: **TBD - insert after recording**
+
+## References
+
+[1] V. Velepucha and P. Flores, "A Survey on Microservices Architecture: Principles, Patterns and
+Migration Challenges," *IEEE Access*, vol. 11, pp. 88339-88358, 2023,
+doi: 10.1109/ACCESS.2023.3305687.
+
+[3] R. Maharjan, M. S. H. Chy, M. A. Arju, and T. Cerny, "Benchmarking Message Queues," *Telecom*,
+vol. 4, no. 2, pp. 298-312, 2023, doi: 10.3390/telecom4020018.

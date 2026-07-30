@@ -66,6 +66,9 @@ non-functional for anything but public health checks.
    JWT issued directly by Booking Service was judged sufficient and simpler to demonstrate end to
    end within the assignment's scope.
 
+Gateway-centred JWT enforcement with Spring Security components, as adopted here, is consistent
+with recent published guidance on securing Spring Boot-based microservice ecosystems [4].
+
 ## Consequences
 
 **Positive**
@@ -97,6 +100,12 @@ non-functional for anything but public health checks.
 - `booking-service/src/main/java/com/labequip/booking/config/FeignHeaderForwardingConfig.java`
 - Config: `config-server/src/main/resources/config/application.yml` (`jwt.secret`),
   `api-gateway.yml` (`security.public-paths`)
-- Report evidence: Section 2.3 "Security" (`docs/evidence-crud-security.txt`, items 1-3: 200 login,
-  401 no-token, 403 wrong-role)
+- Report evidence: Section 2.3 "REST APIs, Authentication and Role-Based Access"
+  (`docs/screenshots/09-crud-security-part1.jpg`: 200 login, 401 no-token, 403 wrong-role)
 - Screencast timestamp: **TBD - insert after recording**
+
+## References
+
+[4] C. L. Aldea and R. Bocu, "Authentication Challenges and Solutions in Microservice
+Architectures," *Applied Sciences*, vol. 15, no. 22, art. 12088, 2025,
+doi: 10.3390/app152212088.

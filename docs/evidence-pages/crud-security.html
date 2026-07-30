@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { background: #1e1e1e; margin: 0; padding: 24px; font-family: 'Menlo', 'Courier New', monospace; }
+  .cmd { color: #dcdcaa; }
+  pre { background: #1e1e1e; color: #d4d4d4; font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-all; margin: 0 0 18px 0; }
+  .status2xx { color: #4ec9b0; font-weight: bold; }
+  .status4xx { color: #f14c4c; font-weight: bold; }
+  .status5xx { color: #f14c4c; font-weight: bold; }
+  .hdr { color: #9cdcfe; }
+  .body { color: #ce9178; }
+  .section { border-left: 3px solid #444; padding-left: 12px; margin-bottom: 22px; }
+</style>
+</head>
+<body>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i -X POST http://localhost:8080/api/auth/login -H 'Content-Type: application/json' \
+    -d '{"username":"admin","password":"admin123"}'</span>
+<span class="status2xx">HTTP/1.1 200 OK</span>
+<span class="hdr">X-Correlation-Id: c5e97bdd-7175-4b5f-953c-192fdf3d4452</span>
+
+<span class="body">{"token":"eyJhbGciOiJIUzM4NCJ9...(truncated)...CLR7jgxPodCS1nuNTz2Zqwt","username":"admin","role":"ADMIN","expiresInMs":3600000}</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i http://localhost:8080/api/equipment
+    <span style="color:#808080"># no Authorization header</span></span>
+<span class="status4xx">HTTP/1.1 401 Unauthorized</span>
+<span class="hdr">X-Auth-Error: Missing bearer token</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i -X POST http://localhost:8080/api/equipment -H "Authorization: Bearer $STUDENT_TOKEN" \
+    -H 'Content-Type: application/json' -d '{"name":"X","category":"Y","location":"Z","status":"AVAILABLE"}'
+    <span style="color:#808080"># student has role USER, not ADMIN</span></span>
+<span class="status4xx">HTTP/1.1 403 Forbidden</span>
+<span class="hdr">X-Correlation-Id: 5e85ea9c-54eb-4011-8bdf-ca81e0154cd2</span>
+
+<span class="body">{"timestamp":"2026-07-30T17:42:25.643544Z","status":403,"error":"Requires role: ADMIN"}</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i -X POST http://localhost:8080/api/equipment -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -H 'Content-Type: application/json' \
+    -d '{"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"AVAILABLE","conditionNotes":"New"}'</span>
+<span class="status2xx">HTTP/1.1 201 Created</span>
+<span class="hdr">X-Correlation-Id: 7aec9f0a-c210-445d-80a8-e346fd0d6f74
+Location: /api/equipment/4</span>
+
+<span class="body">{"id":4,"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"AVAILABLE","conditionNotes":"New","createdAt":"2026-07-30T17:42:25.725888Z","updatedAt":"2026-07-30T17:42:25.725888Z"}</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i http://localhost:8080/api/equipment/4 -H "Authorization: Bearer $ADMIN_TOKEN"</span>
+<span class="status2xx">HTTP/1.1 200 OK</span>
+<span class="hdr">X-Correlation-Id: 0064a03a-2956-4133-b025-f59d0936c177</span>
+
+<span class="body">{"id":4,"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"AVAILABLE","conditionNotes":"New","createdAt":"2026-07-30T17:42:25.725888Z","updatedAt":"2026-07-30T17:42:25.725888Z"}</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i -X PUT http://localhost:8080/api/equipment/4 -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -H 'Content-Type: application/json' \
+    -d '{"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"UNDER_MAINTENANCE","conditionNotes":"Nozzle jammed"}'</span>
+<span class="status2xx">HTTP/1.1 200 OK</span>
+<span class="hdr">X-Correlation-Id: 33d8fd99-81ad-4ece-a8e6-fd153ec1cbab</span>
+
+<span class="body">{"id":4,"name":"3D Printer","category":"Fabrication","location":"Lab C","status":"UNDER_MAINTENANCE","conditionNotes":"Nozzle jammed","createdAt":"2026-07-30T17:42:25.725888Z","updatedAt":"2026-07-30T17:42:42.452306Z"}</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i -X POST http://localhost:8080/api/equipment -H "Authorization: Bearer $ADMIN_TOKEN" \
+    -H 'Content-Type: application/json' -d '{"name":"","category":"","location":""}'
+    <span style="color:#808080"># missing required fields</span></span>
+<span class="status4xx">HTTP/1.1 400 Bad Request</span>
+<span class="hdr">X-Correlation-Id: b351867d-cfc9-45f5-9fde-86d9d528aaf3</span>
+
+<span class="body">{"timestamp":"2026-07-30T17:42:42.681224Z","status":400,"error":"Validation Failed","fieldErrors":{"name":"name is required","status":"status is required","category":"category is required","location":"location is required"}}</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i -X DELETE http://localhost:8080/api/equipment/4 -H "Authorization: Bearer $ADMIN_TOKEN"</span>
+<span class="status2xx">HTTP/1.1 204 No Content</span>
+<span class="hdr">X-Correlation-Id: 7de2ca76-6ba2-4c65-90f6-53ec291dc53b</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="cmd">$ curl -i http://localhost:8080/api/equipment/4 -H "Authorization: Bearer $ADMIN_TOKEN"
+    <span style="color:#808080"># deleted above</span></span>
+<span class="status4xx">HTTP/1.1 404 Not Found</span>
+<span class="hdr">X-Correlation-Id: ee53a1fd-393b-4362-9dbc-1165883acdb9</span>
+
+<span class="body">{"timestamp":"2026-07-30T17:42:43.827709Z","status":404,"error":"Equipment 4 not found"}</span></pre>
+</div>
+
+</body>
+</html>

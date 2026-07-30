@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { background: #1e1e1e; margin: 0; padding: 24px; font-family: 'Menlo', 'Courier New', monospace; }
+  .cmd { color: #dcdcaa; }
+  pre { background: #1e1e1e; color: #d4d4d4; font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-all; margin: 0 0 18px 0; }
+  .status2xx { color: #4ec9b0; font-weight: bold; }
+  .status5xx { color: #f14c4c; font-weight: bold; }
+  .hdr { color: #9cdcfe; }
+  .body { color: #ce9178; }
+  .comment { color: #808080; }
+  .key { color: #4ec9b0; }
+  .val-open { color: #f14c4c; font-weight: bold; }
+  .val-closed { color: #4ec9b0; font-weight: bold; }
+  .section { border-left: 3px solid #444; padding-left: 12px; margin-bottom: 22px; }
+</style>
+</head>
+<body>
+
+<div class="section">
+<pre><span class="comment"># Circuit breaker state BEFORE failure</span>
+<span class="cmd">$ curl http://localhost:8081/actuator/health</span>
+{
+  "equipmentService": {
+    "failureRate": "-1.0%", "bufferedCalls": 1, "failedCalls": 0,
+    "notPermittedCalls": 0, "state": <span class="val-closed">"CLOSED"</span>
+  }
+}</pre>
+</div>
+
+<div class="section">
+<pre><span class="comment"># kill -9 equipment-service   (simulating an outage)
+
+$ curl -i -X POST http://localhost:8080/api/bookings -H "Authorization: Bearer $STUDENT_TOKEN" \
+    -H 'Content-Type: application/json' -d '{"equipmentId":1,"startTime":"...","endTime":"..."}'</span>
+<span class="status5xx">HTTP/1.1 503 Service Unavailable</span>
+<span class="hdr">X-Correlation-Id: 291756ba-ba0c-41fa-bf9b-78a5d65eae3a</span>
+
+<span class="body">{"timestamp":"2026-07-30T17:43:14.309783Z","status":503,"error":"Equipment Service is currently unavailable - could not verify equipment 1. Please try again shortly."}</span>
+
+<span class="comment"># total request time: ~1.3s - a fast, clear failure, not a hang</span></pre>
+</div>
+
+<div class="section">
+<pre><span class="comment"># 6 more rapid attempts while Equipment Service is still down:
+attempt 1: 503   attempt 2: 503   attempt 3: 503
+attempt 4: 503   attempt 5: 503   attempt 6: 503
+
+# Circuit breaker state AFTER repeated failures</span>
+<span class="cmd">$ curl http://localhost:8081/actuator/health</span>
+{
+  "equipmentService": {
+    "failureRate": "80.0%", "failureRateThreshold": "50.0%",
+    "bufferedCalls": 5, "failedCalls": 4,
+    "notPermittedCalls": 17, "state": <span class="val-open">"OPEN"</span>
+  }
+}
+
+<span class="comment"># failureRateThreshold (50%) exceeded (actual 80%) once minimum-number-of-calls (5) was
+# reached -> breaker opened. notPermittedCalls=17 shows it then rejected further calls
+# immediately, with no network attempt, while OPEN.
+
+# After wait-duration-in-open-state (10s), a follow-up query confirmed automatic recovery:</span>
+{ "equipmentService": { "state": "HALF_OPEN" } }</pre>
+</div>
+
+</body>
+</html>

@@ -53,7 +53,9 @@ feign:
   failed, it opens for 10 seconds, during which calls fail immediately (`notPermittedCalls`,
   verified in testing: see Implementation Evidence) without attempting the network call at all -
   protecting Booking Service from wasting resources on a service known to be down. It then
-  half-opens automatically to test recovery with a limited number of trial calls.
+  half-opens automatically to test recovery with a limited number of trial calls. This
+  CLOSED → OPEN → HALF_OPEN lifecycle mirrors circuit-breaker refinements proposed to reduce
+  state-transition delay and improve failure detection in microservice architectures [2].
 - **`fallbackMethod = "equipmentUnavailableFallback"`** runs whenever the retries are exhausted or
   the circuit is open, and throws a `ResponseStatusException(503, ...)` with a clear message -
   turning an opaque connection failure into a well-formed API response the client can act on,
@@ -114,8 +116,14 @@ feign:
 - `booking-service/src/main/java/com/labequip/booking/service/EquipmentAvailabilityService.java`
 - `booking-service/src/main/java/com/labequip/booking/client/EquipmentClient.java`
 - `config-server/src/main/resources/config/booking-service.yml` (`resilience4j.*`, `feign.client.config`)
-- Resilience evidence transcript: `docs/evidence-resilience.txt` - circuit breaker state
+- Resilience evidence: `docs/screenshots/11-resilience.jpg` - circuit breaker state
   `CLOSED` → repeated `503`s → `OPEN` (`failureRate: 80%`, `notPermittedCalls: 17`) → automatic
-  `HALF_OPEN` transition
+  `HALF_OPEN` transition (raw transcript also kept at `docs/evidence-resilience.txt`)
 - Report evidence: Section 2.3 "Service-to-Service Communication and Resilience"
 - Screencast timestamp: **TBD - insert after recording**
+
+## References
+
+[2] A. Hlybovets and I. Paprotskyi, "Increasing the Fault Tolerance in Microservice Architecture,"
+*Cybernetics and Systems Analysis*, vol. 60, no. 3, pp. 161-172, 2024,
+doi: 10.1007/s10559-024-00689-0.
