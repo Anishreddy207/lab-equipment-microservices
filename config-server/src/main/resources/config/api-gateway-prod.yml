@@ -1,0 +1,5 @@
+logging:
+  level:
+    root: WARN
+    com.labequip: INFO
+    org.springframework.cloud.gateway: INFO

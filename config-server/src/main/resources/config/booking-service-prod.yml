@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${BOOKING_DB_HOST:localhost}:${BOOKING_DB_PORT:5433}/${BOOKING_DB_NAME:booking_db}
+    driver-class-name: org.postgresql.Driver
+    username: ${BOOKING_DB_USERNAME:booking_user}
+    password: ${BOOKING_DB_PASSWORD}
+  jpa:
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    root: WARN
+    com.labequip: INFO

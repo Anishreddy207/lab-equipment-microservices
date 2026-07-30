@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: false
+          default-filters:
+            - CorrelationId
+          routes:
+            - id: auth-route
+              uri: lb://booking-service
+              predicates:
+                - Path=/api/auth/**
+            - id: booking-service
+              uri: lb://booking-service
+              predicates:
+                - Path=/api/bookings/**
+            - id: equipment-service
+              uri: lb://equipment-service
+              predicates:
+                - Path=/api/equipment/**,/api/maintenance-records/**
+
+jwt:
+  secret: ${JWT_SECRET:change-this-in-production-to-a-long-random-value-1234567890}
+
+security:
+  public-paths: /api/auth/**,/actuator/**

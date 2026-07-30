@@ -1,0 +1,22 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: equipment-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+labequip:
+  messaging:
+    exchange: lab-equipment-exchange
+    maintenance-requested-routing-key: maintenance.requested
+    maintenance-requested-queue: maintenance-requested-queue
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

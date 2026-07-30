@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${EQUIPMENT_DB_HOST:localhost}:${EQUIPMENT_DB_PORT:5434}/${EQUIPMENT_DB_NAME:equipment_db}
+    driver-class-name: org.postgresql.Driver
+    username: ${EQUIPMENT_DB_USERNAME:equipment_user}
+    password: ${EQUIPMENT_DB_PASSWORD}
+  jpa:
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    root: WARN
+    com.labequip: INFO
