@@ -19,6 +19,11 @@ services:
     container_name: labequip-zipkin
     ports:
       - "9411:9411"
+    environment:
+      # Default heap is too small for a long-running demo/dev session and OOMs after a few
+      # hundred spans; in-memory storage means this is lost on restart anyway, so just size it up.
+      JAVA_OPTS: "-Xms256m -Xmx768m"
+    mem_limit: 1g
 
   booking-db:
     image: postgres:16-alpine

@@ -5,3 +5,4 @@ logs/
 *.iml
 .vscode/
 .DS_Store
+docs/screencast/clips/
