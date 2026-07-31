@@ -102,7 +102,7 @@ with recent published guidance on securing Spring Boot-based microservice ecosys
   `api-gateway.yml` (`security.public-paths`)
 - Report evidence: Section 2.3 "REST APIs, Authentication and Role-Based Access"
   (`docs/screenshots/09-crud-security-part1.jpg`: 200 login, 401 no-token, 403 wrong-role)
-- Screencast timestamp: **TBD - insert after recording**
+- Screencast timestamp: **09:52–11:12**
 
 ## References
 

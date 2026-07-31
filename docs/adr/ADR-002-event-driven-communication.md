@@ -115,7 +115,7 @@ system (Booking → Equipment availability check), for reasons specific to this 
   (spans: `booking-service: lab-equipment-exchange/maintenance.requested send` →
   `equipment-service: maintenance-requested-queue receive`)
 - Report evidence: Section 2.3 "Asynchronous Messaging"
-- Screencast timestamp: **TBD - insert after recording**
+- Screencast timestamp: **12:29–13:36**
 
 ## References
 

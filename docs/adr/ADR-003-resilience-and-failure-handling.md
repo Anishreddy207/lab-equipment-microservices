@@ -120,10 +120,10 @@ feign:
   `CLOSED` → repeated `503`s → `OPEN` (`failureRate: 80%`, `notPermittedCalls: 17`) → automatic
   `HALF_OPEN` transition (raw transcript also kept at `docs/evidence-resilience.txt`)
 - Report evidence: Section 2.3 "Service-to-Service Communication and Resilience"
-- Screencast timestamp: **TBD - insert after recording**
+- Screencast timestamp: **11:34–12:29**
 
 ## References
 
 [2] A. Hlybovets and I. Paprotskyi, "Increasing the Fault Tolerance in Microservice Architecture,"
-*Cybernetics and Systems Analysis*, vol. 60, no. 3, pp. 161-172, 2024,
+*Cybernetics and Systems Analysis*, vol. 60, no. 3, pp. 480-488, 2024,
 doi: 10.1007/s10559-024-00689-0.
